@@ -1,7 +1,10 @@
 package com.maslak.gps.ui
 
 import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import android.content.Intent
+import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -39,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maslak.gps.BuildConfig
 import com.maslak.gps.data.MockMode
 import com.maslak.gps.map.OsmMap
+import com.maslak.gps.mock.BubbleService
 import com.maslak.gps.mock.RunPhase
 
 @Composable
@@ -57,12 +61,39 @@ fun MainScreen(vm: MainViewModel, onRequestPermissions: () -> Unit) {
     var showSchedule by remember { mutableStateOf(false) }
     var fullMap by remember { mutableStateOf(false) }
 
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refreshStatus() }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        vm.refreshStatus()
+        BubbleService.hide(context)
+    }
     LaunchedEffect(Unit) {
         vm.messages.collect { snackbar.currentSnackbarData?.dismiss(); snackbar.showSnackbar(it) }
     }
 
     val running = phase != RunPhase.IDLE
+    val overlayLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (BubbleService.canDraw(context)) {
+            BubbleService.show(context)
+            (context as? Activity)?.moveTaskToBack(true)
+        } else {
+            vm.messages.tryEmit("لم يُمنح إذن الظهور فوق التطبيقات")
+        }
+    }
+    fun hideToBubble() {
+        if (BubbleService.canDraw(context)) {
+            BubbleService.show(context)
+            (context as? Activity)?.moveTaskToBack(true)
+        } else {
+            vm.messages.tryEmit("فعّل إذن \"الظهور فوق التطبيقات\" لعرض الأيقونة العائمة")
+            overlayLauncher.launch(
+                Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + context.packageName),
+                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+    }
     fun openDevSettings() {
         val i = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         runCatching { context.startActivity(i) }.onFailure {
@@ -257,7 +288,7 @@ fun MainScreen(vm: MainViewModel, onRequestPermissions: () -> Unit) {
                     ActionButton(
                         "إخفاء الأداة", Icons.Filled.VisibilityOff, Palette.Gray, Modifier.weight(1f),
                         height = 62.dp, textColor = Color.White,
-                    ) { (context as? Activity)?.moveTaskToBack(true) }
+                    ) { hideToBubble() }
                     ActionButton("إيقاف الكل", Icons.Filled.StopCircle, Palette.Red, Modifier.weight(1f), height = 62.dp) { vm.stopAll() }
                 }
 
