@@ -22,4 +22,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: MaslakGPS-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/maslak/debug/*.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Marwani-debug-apk
+          path: app/build/outputs/apk/marwani/debug/*.apk

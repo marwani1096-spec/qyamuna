@@ -17,6 +17,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.maslak.gps.R
 import com.maslak.gps.data.LatLng
+import com.maslak.gps.ui.Palette
+import androidx.compose.ui.graphics.toArgb
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.util.GeoPoint
@@ -63,17 +65,8 @@ private val SatelliteSource = XyzSource(
     yBeforeX = true, copyright = "© Esri"
 )
 
-/** صبغة كحلية خفيفة لتقريب ألوان الخريطة من التصميم */
-private val NavyTint = ColorMatrixColorFilter(
-    ColorMatrix(
-        floatArrayOf(
-            1.05f, 0f, 0f, 0f, 18f,
-            0f, 1.10f, 0f, 0f, 26f,
-            0f, 0f, 1.25f, 0f, 48f,
-            0f, 0f, 0f, 1f, 0f,
-        )
-    )
-)
+/** صبغة الخريطة حسب ألوان النسخة */
+private val NavyTint = ColorMatrixColorFilter(ColorMatrix(Palette.MapTint))
 
 private fun LatLng.gp() = GeoPoint(lat, lng)
 
@@ -133,7 +126,7 @@ fun OsmMap(
                 }))
 
                 holder.route = Polyline(this).apply {
-                    outlinePaint.color = 0xFF30D5C8.toInt()
+                    outlinePaint.color = Palette.Teal.toArgb()
                     outlinePaint.strokeWidth = 9f
                     outlinePaint.isAntiAlias = true
                 }

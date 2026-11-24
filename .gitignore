@@ -7,3 +7,7 @@ local.properties
 captures/
 .cxx/
 .kotlin/
+
+# ملفات الخطوط (رخصة خط ثمانية تمنع إعادة النشر)
+app/src/*/assets/fonts/*.otf
+app/src/*/assets/fonts/*.ttf

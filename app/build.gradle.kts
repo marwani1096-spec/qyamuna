@@ -9,11 +9,24 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.maslak.gps"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+    }
+
+    flavorDimensions += "brand"
+    productFlavors {
+        create("maslak") {
+            dimension = "brand"
+            applicationId = "com.maslak.gps"
+            resValue("string", "app_name", "مسلك GPS")
+        }
+        create("marwani") {
+            dimension = "brand"
+            applicationId = "com.marwani.gps"
+            resValue("string", "app_name", "Marwani")
+        }
     }
 
     buildTypes {
@@ -33,6 +46,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
     lint {
         abortOnError = false

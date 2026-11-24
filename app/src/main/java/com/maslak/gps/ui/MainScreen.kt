@@ -314,7 +314,7 @@ private fun Header(phase: RunPhase, coords: String, onInfo: () -> Unit, onClose:
         ) { Icon(Icons.Filled.Navigation, null, tint = Color(0xFF0B1F10), modifier = Modifier.size(28.dp)) }
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
-            Text("MaslakGPS", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
+            Text(Palette.NAME, color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
             val (label, color) = when (phase) {
                 RunPhase.IDLE -> "متوقف • $coords" to Palette.TextDim
                 RunPhase.WAITING -> "بانتظار الجدولة…" to Palette.Orange
